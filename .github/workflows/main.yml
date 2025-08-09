@@ -25,7 +25,7 @@ jobs:
            python-version: "3.12"
       
       - name: install
-        run: install unitypy construct
+        run: pip install unitypy construct
         
       - name: Start The Code
         run: python x.py
