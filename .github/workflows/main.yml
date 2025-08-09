@@ -1,0 +1,55 @@
+name: The Bot Host
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  schedule:
+    - cron: "*/30 * * * *"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Fetch latest changes
+        run: git pull origin ${{ github.head_ref }}
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v3
+        with:
+           python-version: "3.12"
+      
+      - name: install
+        run: unzip aaaa.zip && pip install unitypy construct
+        
+      - name: Start The Code
+        run: python x.py
+        
+    
+      - name: keep alive
+        id: check_runs
+        run: |
+          echo "has_new_run=false" >> $GITHUB_OUTPUT
+          while true; do
+            sleep 10
+            latest_run=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              "https://api.github.com/repos/${{ github.repository }}/actions/runs?per_page=1&status=queued&status=in_progress" | \
+              jq -r '.workflow_runs[0].id')
+            if [[ $latest_run != ${{ github.run_id }} ]]; then
+              echo "has_new_run=true" >> $GITHUB_OUTPUT
+              break
+            fi
+          done
+     
+      - name: Stop workflow
+        if: steps.check_runs.outputs.has_new_run == 'true'
+        run: exit 0
+
+      - name: keep
+        if: steps.check_runs.outputs.has_new_run == 'false'
+        run: sleep 60
