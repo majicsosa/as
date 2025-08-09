@@ -15,19 +15,17 @@ for dirpath, _, filenames in os.walk(input_dir):
             for obj in env.objects:
                 if obj.type.name == "TextAsset":
                     data = obj.read()
-                    name_lower = data.name.lower()
-                    if "items" in name_lower:
-                        raw_bytes = data.script
-                        try:
-                            decompressed = zlib.decompress(raw_bytes)
-                            content = decompressed
-                        except:
-                            content = raw_bytes
-                        output_path = os.path.join(output_dir, data.name + ".json")
-                        with open(output_path, "wb") as f:
-                            f.write(content)
-                        print(f"[SAVED] {data.name} extracted and decompressed to {output_path}")
-        except:
+                    raw_bytes = data.script
+                    try:
+                        decompressed = zlib.decompress(raw_bytes)
+                        content = decompressed
+                    except:
+                        content = raw_bytes
+                    output_path = os.path.join(output_dir, data.name + ".json")
+                    with open(output_path, "wb") as f:
+                        f.write(content)
+                    print(f"[SAVED] {data.name} extracted to {output_path}")
+        except Exception:
             pass
 
-print("استخراج وفك ضغط جميع ملفات items انتهى.")
+print("استخراج جميع ملفات JSON انتهى.")
